@@ -3,7 +3,7 @@ from helper import get_qa_chain, create_vector_db
 
 # Set page title and background color
 st.set_page_config(
-    page_title="TRANQUIL Trails 🍀",
+    page_title="TRANQUIL TRAILS",
     page_icon="🍀",
     layout="wide",
     initial_sidebar_state="collapsed"

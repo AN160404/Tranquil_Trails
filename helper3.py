@@ -42,7 +42,7 @@ def create_vector_db():
  vectordb = FAISS.from_documents(documents=data,embedding=instructor_embeddings)
  vectordb.save_local(vectordb_file_path)
 #  retriever = vectordb.as_retriever(score_threshold = 0.7)
-#  rdocs = retriever.get_relevant_documents("breathing meditation")
+#  rdocs = retriever.get_relevant_documents("" meditation")
 #  rdocs
 def get_qa_chain():
    vectordb = FAISS.load_local(vectordb_file_path, instructor_embeddings, allow_dangerous_deserialization=True)

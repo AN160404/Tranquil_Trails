@@ -97,13 +97,6 @@ if 'show_history' not in st.session_state:
 st.markdown("<p class='ask-question-text'>Ask a Question:</p>", unsafe_allow_html=True)
 question = st.text_input("", "", key="question_input")
 
-# Container for the submit button
-with st.container():
-    st.markdown("<div class='button-container'>", unsafe_allow_html=True)
-    if st.button("Submit", key="submit", use_container_width=True):
-        create_vector_db()
-    st.markdown("</div>", unsafe_allow_html=True)
-
 # Function to handle the query and update history
 def handle_query(query):
     chain = get_qa_chain()
@@ -111,11 +104,14 @@ def handle_query(query):
     st.session_state['history'].append((query, response['result']))  # Assuming response returns a dictionary with 'result' key
     return response['result']
 
-# Display the response when a question is asked
-if question:
-    response = handle_query(question)
-    st.header("Answer")
-    st.markdown(f"<p style='font-size: 18px;'>{response}</p>", unsafe_allow_html=True)
+# Container for the submit button
+with st.container():
+    st.markdown("<div class='button-container'>", unsafe_allow_html=True)
+    if st.button("Submit", key="submit", use_container_width=True):
+        response = handle_query(question)
+        st.header("Answer")
+        st.markdown(f"<p style='font-size: 18px;'>{response}</p>", unsafe_allow_html=True)
+    st.markdown("</div>", unsafe_allow_html=True)
 
 # Button to toggle conversation history display
 history_button_label = "History" if st.session_state['show_history'] else "History"

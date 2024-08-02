@@ -28,27 +28,19 @@ def search_youtube(api_key, query, max_results=5):
             })
 
     return video_details
-def main():
-    api_key = 'AIzaSyAxM1LCOMf-EIZO5cf-4n3ouQbRi7PQr70'  # Replace with your actual API key
 
-    # Get search query from user
-    query = input("Enter search query for Youtube: ")
-
-    # Get search results
+if __name__ == '__main__':
+    api_key = 'AIzaSyAYvoBvpWrvCrH5QTk0NGq11p5PUMtWevc'  # Replace with your actual API key
+    query = input("Enter search query for YouTube: ")
     results = search_youtube(api_key, query)
 
-    # Print the results
     if results:
         print(f"\nTop {len(results)} results for '{query}':\n")
         for i, result in enumerate(results, start=1):
             print(f"Result {i}:")
+            print(f"Title: {result['title']}")
+            print(f"Description: {result['description']}")
             print(f"Video URL: {result['video_url']}")
+            print(f"Thumbnail URL: {result['thumbnail_url']}\n")
     else:
         print("No results found.")
-
-    # Get user input for the query
-    user_query = input("Enter your search query: ")
-    
-   
-if __name__ == '__main__':
-    main()

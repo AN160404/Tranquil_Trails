@@ -1,5 +1,14 @@
 import streamlit as st
+import asyncio
+from reddit import fetch_reddit_data
 from helper3 import get_qa_chain, create_vector_db
+from review import search_youtube
+
+# Define a function to run the fetch_reddit_data coroutine
+def run_fetch(query):
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    return loop.run_until_complete(fetch_reddit_data(query))
 
 # Set up the page configuration with an aesthetic that follows an Indian-inspired theme
 st.set_page_config(
@@ -60,6 +69,14 @@ st.markdown(
         color: #FF6B6B;
         text-align: center;
     }
+    h2 {
+        font-family: 'Playfair New Zealand', serif;
+        font-weight: 400;
+        font-size: 30px;
+        color: #FF6B6B;
+        text-align: center;
+        margin-bottom: 10px;
+    }
     p {
         font-size: 18px;
         font-family: 'Poppins', sans-serif;
@@ -93,10 +110,6 @@ if 'history' not in st.session_state:
 if 'show_history' not in st.session_state:
     st.session_state['show_history'] = False
 
-# Text input for the user's question
-st.markdown("<p class='ask-question-text'>Ask a Question:</p>", unsafe_allow_html=True)
-question = st.text_input("", "", key="question_input")
-
 # Function to handle the query and update history
 def handle_query(query):
     chain = get_qa_chain()
@@ -104,14 +117,22 @@ def handle_query(query):
     st.session_state['history'].append((query, response['result']))  # Assuming response returns a dictionary with 'result' key
     return response['result']
 
+# Text input for the user's question
+st.markdown("<p class='ask-question-text'>Ask a Question:</p>", unsafe_allow_html=True)
+question = st.text_input("", "", key="question_input")
+
 # Container for the submit button
 with st.container():
     st.markdown("<div class='button-container'>", unsafe_allow_html=True)
-    if st.button("Submit", key="submit", use_container_width=True):
+    submit_clicked = st.button("Submit", key="submit", use_container_width=True)
+    st.markdown("</div>", unsafe_allow_html=True)
+
+if submit_clicked:
+    create_vector_db()
+    if question:
         response = handle_query(question)
         st.header("Answer")
         st.markdown(f"<p style='font-size: 18px;'>{response}</p>", unsafe_allow_html=True)
-    st.markdown("</div>", unsafe_allow_html=True)
 
 # Button to toggle conversation history display
 history_button_label = "History" if st.session_state['show_history'] else "History"
@@ -130,3 +151,65 @@ if st.session_state['show_history']:
     for idx, (q, ans) in enumerate(st.session_state['history'], start=1):
         st.markdown(f"**Q{idx}:** {q}", unsafe_allow_html=True)
         st.markdown(f"**A{idx}:** {ans}", unsafe_allow_html=True)
+
+# YouTube Search Functionality
+st.header("YouTube Search")
+
+def youtube_search():
+    api_key = 'AIzaSyAYvoBvpWrvCrH5QTk0NGq11p5PUMtWevc'  # Replace with your actual API key
+
+    # Get search query from user
+    query = st.text_input("Enter search query for YouTube:")
+
+    # Container for the Fetch YouTube Links button
+    with st.container():
+        st.markdown("<div class='button-container'>", unsafe_allow_html=True)
+        fetch_youtube_clicked = st.button("Fetch YouTube Links", key="fetch_youtube", use_container_width=True)
+        st.markdown("</div>", unsafe_allow_html=True)
+
+    if fetch_youtube_clicked:
+        if query:
+            # Get search results
+            results = search_youtube(api_key, query)
+
+            # Display the results
+            if results:
+                st.write(f"Top {len(results)} results for '{query}':")
+                for i, result in enumerate(results, start=1):
+                    st.write(f"**Result {i}:**")
+                    st.write(f"**Title:** {result['title']}")
+                    st.write(f"**Description:** {result['description']}")
+                    st.write(f"[Watch Video]({result['video_url']})")
+                    st.image(result['thumbnail_url'])
+                    st.write("---")
+            else:
+                st.warning("No results found.")
+        else:
+            st.warning("Please enter a search query.")
+
+youtube_search()
+
+# Reddit Search Functionality
+st.header("Reddit Search")
+
+# Text input for Reddit search query
+reddit_query = st.text_input("Enter search query for Reddit:")
+
+# Container for the Fetch Reddit Data button
+with st.container():
+    st.markdown("<div class='button-container'>", unsafe_allow_html=True)
+    fetch_reddit_clicked = st.button("Fetch Reddit Data", key="fetch_reddit", use_container_width=True)
+    st.markdown("</div>", unsafe_allow_html=True)
+
+if fetch_reddit_clicked:
+    if reddit_query:
+        with st.spinner("Fetching data..."):
+            urls = run_fetch(reddit_query)
+            if urls:
+                st.write("Post URLs:")
+                for url in urls:
+                    st.write(url)
+            else:
+                st.write("No results found.")
+    else:
+        st.warning("Please enter a search query.")

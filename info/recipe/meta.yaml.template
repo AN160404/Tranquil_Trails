@@ -1,0 +1,38 @@
+{% set name = "nest_asyncio" %}
+{% set version = "1.0.0" %}
+{% set file_ext = "tar.gz" %}
+{% set hash_type = "sha256" %}
+{% set hash_value = "bd1cb7df2ea979e57d8ad02493ad85f9afbf1fcea3dfe34239da8c0dda98087e" %}
+
+package:
+  name: '{{ name|lower }}'
+  version: '{{ version }}'
+
+source:
+  fn: '{{ name }}-{{ version }}.{{ file_ext }}'
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.{{ file_ext }}
+  '{{ hash_type }}': '{{ hash_value }}'
+
+build:
+  number: 0
+  script: python setup.py install --single-version-externally-managed --record=record.txt
+
+requirements:
+  host:
+    - python
+    - setuptools
+  run:
+    - python
+
+about:
+  home: https://github.com/erdewit/nest_asyncio
+  license: BSD License
+  license_family: BSD
+  license_file: ''
+  summary: Patch asyncio to allow nested event loops
+  description: ''
+  doc_url: ''
+  dev_url: ''
+
+extra:
+  recipe-maintainers: 'erdewit'

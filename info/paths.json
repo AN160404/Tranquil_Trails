@@ -1,0 +1,41 @@
+{
+  "paths": [
+    {
+      "_path": "Lib/site-packages/__pycache__/nest_asyncio.cpython-37.pyc",
+      "path_type": "hardlink",
+      "sha256": "9014fc4aea4e297b556a5c18c66292f7de607885a1da0a93ca2037691569028a",
+      "size_in_bytes": 4626
+    },
+    {
+      "_path": "Lib/site-packages/nest_asyncio-1.0.0-py3.7.egg-info/PKG-INFO",
+      "path_type": "hardlink",
+      "sha256": "b0efb886ddb9b43ee58ea799a6330cbe17399acf79e00d2321ec7e2e59a8563c",
+      "size_in_bytes": 3001
+    },
+    {
+      "_path": "Lib/site-packages/nest_asyncio-1.0.0-py3.7.egg-info/SOURCES.txt",
+      "path_type": "hardlink",
+      "sha256": "6d059e3d44320fbf4bcd2efd0119665c1de6bf8f379a586048084fcf88062998",
+      "size_in_bytes": 189
+    },
+    {
+      "_path": "Lib/site-packages/nest_asyncio-1.0.0-py3.7.egg-info/dependency_links.txt",
+      "path_type": "hardlink",
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+      "size_in_bytes": 1
+    },
+    {
+      "_path": "Lib/site-packages/nest_asyncio-1.0.0-py3.7.egg-info/top_level.txt",
+      "path_type": "hardlink",
+      "sha256": "71014133f7cf6c37615558a15b04bedbd5a25b5ecb677af89525f2bf0173373b",
+      "size_in_bytes": 13
+    },
+    {
+      "_path": "Lib/site-packages/nest_asyncio.py",
+      "path_type": "hardlink",
+      "sha256": "f7741ea929c6cb112f2b56b2150ee5938a588b9ae80c19fd8aef0364b6f75e80",
+      "size_in_bytes": 5501
+    }
+  ],
+  "paths_version": 1
+}

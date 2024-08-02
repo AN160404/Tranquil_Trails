@@ -1,0 +1,40 @@
+# This file created by conda-build 3.17.6
+# meta.yaml template originally from:
+# C:\Users\daniel.farrell\Documents\Repos\terapulse_python_env\tvl_package_builds\nest_asyncio, last modified Thu Feb 28 14:15:35 2019
+# ------------------------------------------------
+
+package:
+    name: nest_asyncio
+    version: 1.0.0
+source:
+    fn: nest_asyncio-1.0.0.tar.gz
+    sha256: bd1cb7df2ea979e57d8ad02493ad85f9afbf1fcea3dfe34239da8c0dda98087e
+    url: https://pypi.io/packages/source/n/nest_asyncio/nest_asyncio-1.0.0.tar.gz
+build:
+    number: '0'
+    script: python setup.py install --single-version-externally-managed --record=record.txt
+    string: py37_0
+requirements:
+    host:
+        - ca-certificates 2019.1.23 0
+        - certifi 2018.11.29 py37_0
+        - openssl 1.1.1b he774522_0
+        - pip 19.0.3 py37_0
+        - python 3.7.2 h8c8aaf0_10
+        - setuptools 40.8.0 py37_0
+        - sqlite 3.26.0 he774522_0
+        - vc 14.1 h0510ff6_4
+        - vs2015_runtime 14.15.26706 h3a45250_0
+        - wheel 0.33.1 py37_0
+        - wincertstore 0.2 py37_0
+    run:
+        - python >=3.7,<3.8.0a0
+about:
+    home: https://github.com/erdewit/nest_asyncio
+    license: BSD License
+    license_family: BSD
+    summary: Patch asyncio to allow nested event loops
+extra:
+    copy_test_source_files: true
+    final: true
+    recipe-maintainers: erdewit

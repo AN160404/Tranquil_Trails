@@ -36,3 +36,18 @@
     transform: rotate(360deg);
   }
 }
+
+.navbar{
+  font-family:Georgia, 'Times New Roman', Times, serif;
+  margin:auto;
+}
+
+.navbar .container-fluid .navbar-brand{
+  padding:4px;
+  margin:4px;
+}
+
+img{
+  height:50px;
+  border-radius: 100%;
+}

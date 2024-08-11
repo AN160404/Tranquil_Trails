@@ -143,11 +143,10 @@ def generate_image_description(image_data, model, prompt="Guess this place and g
     response = model.generate_content([prompt, image1])
     return response.text
 
-# Unified search function
-def unified_search(query):
+# Function to handle the search queries
+def handle_search(query):
     create_vector_db()
 
-    # YouTube search (if "youtube" in query)
     if "youtube" in query.lower():
         youtube_api_key = 'AIzaSyAYvoBvpWrvCrH5QTk0NGq11p5PUMtWevc'
         try:
@@ -169,7 +168,6 @@ def unified_search(query):
             st.write("Here's the response for debugging purposes:")
             st.write(results)  # Outputting the results for debugging
 
-    # Reddit search (if "reddit" in query)
     elif "reddit" in query.lower():
         urls = handle_reddit_search(query)
         if urls:
@@ -181,43 +179,41 @@ def unified_search(query):
         else:
             st.warning("No results found.")
 
-    # Image description generation (if an image is uploaded)
-    elif st.session_state.get("uploaded_image"):
-        uploaded_file = st.session_state["uploaded_image"]
-        if uploaded_file is not None:
-            st.image(uploaded_file, caption="Uploaded Image", width=400)
-            image_data = uploaded_file.read()
-            os.environ['api_key'] = api_key
-            genai.configure(api_key=api_key)
-            model = genai.GenerativeModel('gemini-1.5-flash')
-            generated_text = generate_image_description(image_data, model)
-            st.markdown("### Generated Description")
-            st.markdown(f"<p>{generated_text}</p>", unsafe_allow_html=True)
-            text_to_audio(generated_text)
-            st.session_state['history'].append((query, f"Answer: {generated_text}"))
-
-    # Default Q&A response
     else:
         response = handle_query(query)
         st.header("Answer")
         st.markdown(f"<p style='font-size: 18px;'>{response}</p>", unsafe_allow_html=True)
         text_to_audio(response)
+        st.session_state['history'].append((query, response))
+
+# Function to handle image description
+def handle_image_description(uploaded_file):
+    if uploaded_file is not None:
+        st.image(uploaded_file, caption="Uploaded Image", width=400)
+        image_data = uploaded_file.read()
+        os.environ['api_key'] = api_key
+        genai.configure(api_key=api_key)
+        model = genai.GenerativeModel('gemini-1.5-flash')
+        generated_text = generate_image_description(image_data, model)
+        st.markdown("### Generated Description")
+        st.markdown(f"<p>{generated_text}</p>", unsafe_allow_html=True)
+        text_to_audio(generated_text)
 
 # Unified search input
 st.markdown("<p class='ask-question-text'>Enter your query:</p>", unsafe_allow_html=True)
 user_query = st.text_input("", "", key="user_query")
 
-# File uploader for image description generator
-uploaded_file = st.file_uploader("Upload an image for description:", type=["jpg", "jpeg", "png"])
-if uploaded_file is not None:
-    st.session_state["uploaded_image"] = uploaded_file
-    unified_search("image_description")
-
-# Full-width submit button
+# Full-width submit button for text queries
 st.markdown("<div class='button-container'>", unsafe_allow_html=True)
-if st.button("Submit", key="submit", use_container_width=True):
-    unified_search(user_query)
+if st.button("Submit Query", key="submit_query", use_container_width=True):
+    handle_search(user_query)
 st.markdown("</div>", unsafe_allow_html=True)
+
+# Separate section for image upload
+st.markdown("<p class='ask-question-text'>Upload Image:</p>", unsafe_allow_html=True)
+uploaded_file = st.file_uploader("",type=["jpg", "jpeg", "png"])
+if uploaded_file is not None:
+    handle_image_description(uploaded_file)
 
 # Move the history button below everything
 history_button_label = "HISTORY"
@@ -232,5 +228,3 @@ if st.session_state['show_history']:
     for idx, (q, ans) in enumerate(st.session_state['history'], start=1):
         st.markdown(f"**Q{idx}:** {q}", unsafe_allow_html=True)
         st.markdown(f"**A{idx}:** {ans}", unsafe_allow_html=True)
-
-

@@ -1,0 +1,77 @@
+# Python cache files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environment variables
+.env
+
+# Virtual environment directory
+venv/
+.env/
+env/
+.venv/
+
+# macOS-specific files
+.DS_Store
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints
+
+# VSCode settings
+.vscode/
+
+# Byte-compiled / optimized / DLL files
+*.pyc
+*.pyo
+*.pyd
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+
+# Logs
+*.log
+
+# Ignore any compiled extensions
+*.so
+*.dylib
+*.dll
+
+# PyCharm files
+.idea/
+
+# Ignore dotenv environment variable file
+.env
+
+# Ignore streamlit config file
+.streamlit/
+
+# Ignore database files
+*.db
+*.sqlite3

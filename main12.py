@@ -1,3 +1,5 @@
+import streamlit as st
+
 # Set up the page configuration
 st.set_page_config(
     page_title="TRANQUIL TRAILS Q&A",
@@ -6,7 +8,6 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-import streamlit as st
 import asyncio
 from reddit import fetch_reddit_data
 from app import get_qa_chain, create_vector_db

@@ -13,9 +13,9 @@ import os
 
 load_dotenv()
 api_key = os.getenv("api_key")
+os.environ['api_key']=api_key
 
 
-os.environ['GOOGLE_API_KEY']=api_key
 from langchain_google_genai import GoogleGenerativeAI
 
 

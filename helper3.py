@@ -1,32 +1,22 @@
 import streamlit as st
-import os
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
 import google.generativeai as genai
+from langchain.document_loaders.csv_loader import CSVLoader
 from langchain_community.vectorstores import FAISS
 from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_google_genai import GoogleGenerativeAI
 from langchain.chains import RetrievalQA
-
 from langchain.prompts import PromptTemplate
-
 from dotenv import load_dotenv
 import os
 
-load_dotenv()
+load_dotenv('hello.env')
 api_key = os.getenv("api_key")
 os.environ['api_key']=api_key
-
-
-from langchain_google_genai import GoogleGenerativeAI
-
 
 llm=GoogleGenerativeAI(google_api_key=api_key,model='models/text-bison-001', temperature=0.9)
 
 # llm=google_palm(google_api_key=api_key,temperature=0.6)
-from langchain.document_loaders.csv_loader import CSVLoader
-
-
-
-
 
 embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
 e = embeddings.embed_query("Goa")

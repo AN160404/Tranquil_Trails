@@ -1,5 +1,4 @@
 import streamlit as st
-
 # Set up the page configuration
 st.set_page_config(
     page_title="TRANQUIL TRAILS Q&A",
@@ -20,14 +19,12 @@ from dotenv import load_dotenv
 # Load environment variables
 load_dotenv()
 
-
-
-# Retrieve the API key from the environment
-api_key = os.getenv("GOOGLE_API_KEY")
-
 # Ensure the API key is available
+api_key = os.getenv("GOOGLE_API_KEY")
 if not api_key:
     st.error("Google API key is missing. Please check your .env file.")
+
+
 
 # Define a function to run the fetch_reddit_data coroutine
 def run_fetch(query):
@@ -209,31 +206,33 @@ def handle_image_description(uploaded_file):
         st.markdown(f"<p>{generated_text}</p>", unsafe_allow_html=True)
         text_to_audio(generated_text)
 
-# Unified search input
-st.markdown("<p class='ask-question-text'>Enter your query:</p>", unsafe_allow_html=True)
-user_query = st.text_input("", "", key="user_query")
+# Create a navigation bar using selectbox
+selected_page = st.selectbox("Navigate", ["About", "Search", "Image Search", "History"])
 
-# Full-width submit button for text queries
-st.markdown("<div class='button-container'>", unsafe_allow_html=True)
-if st.button("Submit Query", key="submit_query", use_container_width=True):
-    handle_search(user_query)
-st.markdown("</div>", unsafe_allow_html=True)
+# Page navigation
+if selected_page == "About":
+    st.markdown("<h2>About</h2>", unsafe_allow_html=True)
+    st.markdown("This app helps you explore various content including YouTube videos, Reddit posts, and image descriptions.")
+    
+elif selected_page == "Search":
+    # Unified search input
+    st.markdown("<p class='ask-question-text'>Enter your query:</p>", unsafe_allow_html=True)
+    user_query = st.text_input("", "", key="user_query")
 
-# Separate section for image upload
-st.markdown("<p class='ask-question-text'>Upload Image:</p>", unsafe_allow_html=True)
-uploaded_file = st.file_uploader("", type=["jpg", "jpeg", "png"])
-if uploaded_file is not None:
-    handle_image_description(uploaded_file)
-
-# Move the history button below everything
-history_button_label = "HISTORY"
-with st.container():
+    # Full-width submit button for text queries
     st.markdown("<div class='button-container'>", unsafe_allow_html=True)
-    if st.button(history_button_label, key="toggle_history"):
-        st.session_state['show_history'] = not st.session_state['show_history']
+    if st.button("Submit Query", key="submit_query", use_container_width=True):
+        handle_search(user_query)
     st.markdown("</div>", unsafe_allow_html=True)
 
-if st.session_state['show_history']:
+elif selected_page == "Image Search":
+    # Separate section for image upload
+    st.markdown("<p class='ask-question-text'>Upload Image:</p>", unsafe_allow_html=True)
+    uploaded_file = st.file_uploader("", type=["jpg", "jpeg", "png"])
+    if uploaded_file is not None:
+        handle_image_description(uploaded_file)
+
+elif selected_page == "History":
     st.subheader("Conversation History")
     for idx, (q, ans) in enumerate(st.session_state['history'], start=1):
         st.markdown(f"**Q{idx}:** {q}", unsafe_allow_html=True)

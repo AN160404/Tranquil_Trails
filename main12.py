@@ -1,24 +1,4 @@
 import streamlit as st
-import asyncio
-from reddit import fetch_reddit_data
-from app import get_qa_chain, create_vector_db
-from review import search_youtube
-import os
-import google.generativeai as genai
-from gtts import gTTS
-
-
-from dotenv import load_dotenv
-import os
-
-load_dotenv()
-api_key = os.getenv("api_key")
-
-# Define a function to run the fetch_reddit_data coroutine
-def run_fetch(query):
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
-    return loop.run_until_complete(fetch_reddit_data(query))
 
 # Set up the page configuration
 st.set_page_config(
@@ -27,6 +7,33 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="collapsed"
 )
+
+import asyncio
+from reddit import fetch_reddit_data
+from app import get_qa_chain, create_vector_db
+from review import search_youtube
+import os
+import google.generativeai as genai
+from gtts import gTTS
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
+
+
+
+# Retrieve the API key from the environment
+api_key = os.getenv("GOOGLE_API_KEY")
+
+# Ensure the API key is available
+if not api_key:
+    st.error("Google API key is missing. Please check your .env file.")
+
+# Define a function to run the fetch_reddit_data coroutine
+def run_fetch(query):
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    return loop.run_until_complete(fetch_reddit_data(query))
 
 # Define theme colors and apply custom styles to the page
 st.markdown(
@@ -171,8 +178,6 @@ def handle_search(query):
                 st.warning("No results found.")
         except Exception as e:
             st.error(f"An error occurred during YouTube search: {e}")
-            st.write("Here's the response for debugging purposes:")
-            st.write(results)  # Outputting the results for debugging
 
     elif "reddit" in query.lower():
         urls = handle_reddit_search(query)
@@ -197,7 +202,6 @@ def handle_image_description(uploaded_file):
     if uploaded_file is not None:
         st.image(uploaded_file, caption="Uploaded Image", width=400)
         image_data = uploaded_file.read()
-        os.environ['api_key'] = api_key
         genai.configure(api_key=api_key)
         model = genai.GenerativeModel('gemini-1.5-flash')
         generated_text = generate_image_description(image_data, model)
@@ -217,7 +221,7 @@ st.markdown("</div>", unsafe_allow_html=True)
 
 # Separate section for image upload
 st.markdown("<p class='ask-question-text'>Upload Image:</p>", unsafe_allow_html=True)
-uploaded_file = st.file_uploader("",type=["jpg", "jpeg", "png"])
+uploaded_file = st.file_uploader("", type=["jpg", "jpeg", "png"])
 if uploaded_file is not None:
     handle_image_description(uploaded_file)
 

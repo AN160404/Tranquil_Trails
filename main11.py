@@ -1,7 +1,7 @@
 import streamlit as st
 import asyncio
 from reddit import fetch_reddit_data
-from helper3 import get_qa_chain, create_vector_db
+from app import get_qa_chain, create_vector_db
 from review import search_youtube
 import os
 import google.generativeai as genai

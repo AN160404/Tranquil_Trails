@@ -8,8 +8,13 @@ from langchain.chains import RetrievalQA
 
 from langchain.prompts import PromptTemplate
 
+from dotenv import load_dotenv
 import os
-from hello import api_key
+
+load_dotenv()
+api_key = os.getenv("api_key")
+
+
 os.environ['GOOGLE_API_KEY']=api_key
 from langchain_google_genai import GoogleGenerativeAI
 

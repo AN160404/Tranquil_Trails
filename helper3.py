@@ -18,7 +18,7 @@ llm=GoogleGenerativeAI(google_api_key=api_key,model='models/text-bison-001', tem
 
 # llm=google_palm(google_api_key=api_key,temperature=0.6)
 
-embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
+embeddings = GoogleGenerativeAIEmbeddings(google_api_key=api_key,model="models/embedding-001")
 e = embeddings.embed_query("Goa")
 len(e)
 instructor_embeddings = GoogleGenerativeAIEmbeddings(

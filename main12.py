@@ -1,25 +1,33 @@
 import streamlit as st
 
 def main():
-    st.title("Tranquil Trails")
-    st.sidebar.title("Navigation")
-    page = st.sidebar.radio("Select a page", ["About", "Search", "Image Search", "History"])
+    st.set_page_config(page_title="Tranquil Trails", layout="wide")
     
-    if page == "About":
-        from pages.about import about_page
-        about_page()
+    # Header
+    st.title("TRANQUIL TRAILS")
+    
+    # Sidebar sections
+    st.sidebar.write("**Reports**")
+    page = st.sidebar.radio("", ["Dashboard", "Bug reports", "System alerts"], index=0)
+    
+    st.sidebar.write("**Tools**")
+    tool_page = st.sidebar.radio("", ["Search", "History"], index=0)
+    
+    # Content based on sidebar selection
+    if page == "Dashboard":
+        st.write("# Dashboard Content")
         
-    elif page == "Search":
-        from pages.Search import search_page
-        search_page()
+    elif page == "Bug reports":
+        st.write("# Bug Reports Content")
         
-    elif page == "Image Search":
-        from pages.image_search import image_search_page
-        image_search_page()
+    elif page == "System alerts":
+        st.write("# System Alerts Content")
         
-    elif page == "History":
-        from pages.history import history_page
-        history_page()
+    if tool_page == "Search":
+        st.write("# Search Tool Content")
+        
+    elif tool_page == "History":
+        st.write("# History Tool Content")
 
 if __name__ == "__main__":
     main()

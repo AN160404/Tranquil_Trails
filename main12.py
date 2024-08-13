@@ -25,7 +25,6 @@ if not api_key:
     st.error("Google API key is missing. Please check your .env file.")
 
 
-
 # Define a function to run the fetch_reddit_data coroutine
 def run_fetch(query):
     loop = asyncio.new_event_loop()
@@ -78,26 +77,6 @@ st.markdown(
         color: #4B4B4B;
         margin-bottom: 20px;
     }
-    .history-button {
-        background-color: #FF6B6B;
-        color: #F2EFEA;
-        border: none;
-        border-radius: 5px;
-        padding: 10px;
-        font-size: 18px;
-        cursor: pointer;
-        margin: 10px 0;
-    }
-    .history-button-toggled {
-        background-color: #F2EFEA;
-        color: #FF6B6B;
-        border: 2px solid #FF6B6B;
-        border-radius: 5px;
-        padding: 10px;
-        font-size: 18px;
-        cursor: pointer;
-        margin: 10px 0;
-    }
     .button-container {
         display: flex;
         justify-content: center;
@@ -107,16 +86,15 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# Display the page title and description
-st.markdown("<h1>TRANQUIL TRAILS</h1>", unsafe_allow_html=True)
-st.markdown("<p class='descriptive-text'><i>\"Uniting scenic travel and mindful cuisine to nurture body, mind, and spirit in calm locales.\"</i></p>", unsafe_allow_html=True)
-
 # Initialize session state for conversation history and show/hide toggle
 if 'history' not in st.session_state:
     st.session_state['history'] = []
 
 if 'show_history' not in st.session_state:
     st.session_state['show_history'] = False
+
+# Page navigation using selectbox
+selected_page = st.sidebar.selectbox("Navigate", ["About", "Search", "Image Search", "History"])
 
 # Function to handle the Q&A chain
 def handle_query(query):
@@ -206,27 +184,21 @@ def handle_image_description(uploaded_file):
         st.markdown(f"<p>{generated_text}</p>", unsafe_allow_html=True)
         text_to_audio(generated_text)
 
-# Create a navigation bar using selectbox
-selected_page = st.selectbox("Navigate", ["About", "Search", "Image Search", "History"])
-
-# Page navigation
+# Page content based on selected option
 if selected_page == "About":
     st.markdown("<h2>About</h2>", unsafe_allow_html=True)
     st.markdown("This app helps you explore various content including YouTube videos, Reddit posts, and image descriptions.")
-    
+
 elif selected_page == "Search":
-    # Unified search input
     st.markdown("<p class='ask-question-text'>Enter your query:</p>", unsafe_allow_html=True)
     user_query = st.text_input("", "", key="user_query")
 
-    # Full-width submit button for text queries
     st.markdown("<div class='button-container'>", unsafe_allow_html=True)
     if st.button("Submit Query", key="submit_query", use_container_width=True):
         handle_search(user_query)
     st.markdown("</div>", unsafe_allow_html=True)
 
 elif selected_page == "Image Search":
-    # Separate section for image upload
     st.markdown("<p class='ask-question-text'>Upload Image:</p>", unsafe_allow_html=True)
     uploaded_file = st.file_uploader("", type=["jpg", "jpeg", "png"])
     if uploaded_file is not None:

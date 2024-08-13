@@ -12,7 +12,7 @@ import os
 
 load_dotenv('hello.env')
 api_key = os.getenv("api_key")
-os.environ['api_key']=api_key
+os.environ["api_key"]="api_key"
 
 llm=GoogleGenerativeAI(google_api_key=api_key,model='models/text-bison-001', temperature=0.9)
 

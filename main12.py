@@ -1,18 +1,13 @@
 import streamlit as st
 
-# Define a function to render the main app
 def main():
     st.title("Tranquil Trails")
-    
-    # Sidebar navigation
-    page = st.sidebar.selectbox(
-        "Navigate",
-        ["About", "Search", "Image Search", "History"]
-    )
+    st.sidebar.title("Navigation")
+    page = st.sidebar.radio("Select a page", ["About", "Search", "Image Search", "History"])
     
     if page == "About":
-        st.write("## About")
-        st.write("This app helps you explore various content including YouTube videos, Reddit posts, and image descriptions.")
+        from pages.about import about_page
+        about_page()
         
     elif page == "Search":
         from pages.Search import search_page

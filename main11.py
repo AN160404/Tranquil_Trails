@@ -6,7 +6,13 @@ from review import search_youtube
 import os
 import google.generativeai as genai
 from gtts import gTTS
-from hello import api_key
+
+
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+api_key = os.getenv("api_key")
 
 # Define a function to run the fetch_reddit_data coroutine
 def run_fetch(query):

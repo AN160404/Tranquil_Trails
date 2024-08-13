@@ -14,7 +14,7 @@ load_dotenv('hello.env')
 api_key = os.getenv("api_key")
 os.environ["api_key"]="api_key"
 
-llm=GoogleGenerativeAI(api_key=api_key,model='models/text-bison-001', temperature=0.9)
+llm=GoogleGenerativeAI(google_api_key=api_key,model='models/text-bison-001', temperature=0.9)
 
 # llm=google_palm(google_api_key=api_key,temperature=0.6)
 

@@ -15,7 +15,7 @@ def main():
         st.write("This app helps you explore various content including YouTube videos, Reddit posts, and image descriptions.")
         
     elif page == "Search":
-        from pages.search import search_page
+        from pages.Search import search_page
         search_page()
         
     elif page == "Image Search":

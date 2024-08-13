@@ -1,3 +1,11 @@
+# Set up the page configuration
+st.set_page_config(
+    page_title="TRANQUIL TRAILS Q&A",
+    page_icon="🌱",
+    layout="wide",
+    initial_sidebar_state="collapsed"
+)
+
 import streamlit as st
 import asyncio
 from reddit import fetch_reddit_data
@@ -11,13 +19,7 @@ from dotenv import load_dotenv
 # Load environment variables
 load_dotenv()
 
-# Set up the page configuration
-st.set_page_config(
-    page_title="TRANQUIL TRAILS Q&A",
-    page_icon="🌱",
-    layout="wide",
-    initial_sidebar_state="collapsed"
-)
+
 
 # Retrieve the API key from the environment
 api_key = os.getenv("GOOGLE_API_KEY")

@@ -9,7 +9,7 @@ async def fetch_reddit_data(query):
 
         # Define the list of subreddits and limits
         subreddits = ['india']  # Add more subreddits as needed
-        post_limit = 20
+        post_limit = 5
         comment_limit = 5
 
         # Initialize lists to hold posts and comments

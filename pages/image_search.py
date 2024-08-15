@@ -26,11 +26,29 @@ def image_search_page():
         
         os.remove(temp_audio_file)
 
+    # Add custom header
+    st.markdown(
+        """
+        <h1 style='font-family: "Playfair New Zealand", serif; 
+                   font-weight: 400; 
+                   font-size: 50px; 
+                   color: #FF6B6B; 
+                   text-align: center;'>TRANQUIL TRAILS</h1>
+        """, 
+        unsafe_allow_html=True
+    )
+
+    # Image uploader
+    st.markdown("<p style='font-size: 18px; font-family: Poppins, sans-serif; color: #4B4B4B; margin-bottom: 20px;'>Upload an image to generate a description:</p>", unsafe_allow_html=True)
     uploaded_file = st.file_uploader("", type=["jpg", "jpeg", "png"])
+
     if uploaded_file is not None:
         st.image(uploaded_file, caption="Uploaded Image", width=400)
         image_data = uploaded_file.read()
         generated_text = generate_image_description(image_data, model)
+        
         st.markdown("### Generated Description")
-        st.markdown(f"<p>{generated_text}</p>", unsafe_allow_html=True)
+        st.markdown(f"<p style='font-size: 18px; font-family: Poppins, sans-serif; color: #4B4B4B; margin-bottom: 20px;'>{generated_text}</p>", unsafe_allow_html=True)
         text_to_audio(generated_text)
+
+image_search_page()

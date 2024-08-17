@@ -11,7 +11,7 @@ async def fetch_reddit_data(query):
                                 user_agent='test by u/Huge_Donut9460') as reddit:
 
         # Define the list of subreddits and limits
-        subreddits = ['india', 'culture','spirituality','travel']  # Add more subreddits as needed
+        subreddits = ['india', 'culture', 'spirituality', 'travel']  # Add more subreddits as needed
         post_limit = 5
 
         # Initialize a list to hold URLs of posts
@@ -40,7 +40,7 @@ def run_fetch(query):
 # Streamlit interface
 def reddit_search_page():
     load_dotenv()
-    
+
     # Add custom header
     st.markdown(
         """
@@ -71,7 +71,7 @@ def reddit_search_page():
             if urls:
                 st.markdown("<h3 style='font-family: Poppins, sans-serif; color: #FF6B6B;'>Top Post URLs:</h3>", unsafe_allow_html=True)
                 for url in urls:
-                    st.markdown(f"<p style='font-size: 16px; font-family: Poppins, sans-serif; color: #4B4B4B;'>{url}</p>", unsafe_allow_html=True)
+                    st.markdown(f"<a href='{url}' target='_blank' style='font-size: 16px; font-family: Poppins, sans-serif; color: #4B4B4B;'>{url}</a>", unsafe_allow_html=True)
             else:
                 st.warning("No posts found for the query.")
         else:

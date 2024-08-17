@@ -2,13 +2,10 @@ import streamlit as st
 import asyncio
 from app import get_qa_chain, create_vector_db
 from review import search_youtube
-from reddit import fetch_reddit_data
 from gtts import gTTS
 import os
 import google.generativeai as genai
 from dotenv import load_dotenv
-
-
 
 def search_page():
     load_dotenv()
@@ -17,12 +14,6 @@ def search_page():
     # Initialize the 'history' key in st.session_state if it doesn't exist
     if 'history' not in st.session_state:
         st.session_state['history'] = []
-
-    # Function to run the fetch_reddit_data coroutine
-    def run_fetch(query):
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
-        return loop.run_until_complete(fetch_reddit_data(query))
 
     # Function to handle the Q&A chain
     def handle_query(query):
@@ -35,11 +26,6 @@ def search_page():
     def handle_youtube_search(api_key, query):
         results = search_youtube(api_key, query)
         return results
-
-    # Function to handle Reddit search
-    def handle_reddit_search(query):
-        urls = run_fetch(query)
-        return urls
 
     # Function to convert text to audio
     def text_to_audio(text):
@@ -56,8 +42,9 @@ def search_page():
     # Function to handle search queries
     def handle_search(query):
         create_vector_db()
-
-        if "youtube" in query.lower():
+        if "reddit" in query.lower() or "reviews" in query.lower():
+            st.write("I don't know.")
+        elif "youtube" in query.lower():
             youtube_api_key = 'AIzaSyAYvoBvpWrvCrH5QTk0NGq11p5PUMtWevc'
             try:
                 results = handle_youtube_search(youtube_api_key, query)
@@ -77,17 +64,6 @@ def search_page():
                 st.error(f"An error occurred during YouTube search: {e}")
                 st.write("Here's the response for debugging purposes:")
                 st.write(results)  # Outputting the results for debugging
-
-        elif "reviews" in query.lower():
-            urls = handle_reddit_search(query)
-            if urls:
-                st.write(f"Top results for '{query}':")
-                st.write("Post URLs:")
-                for url in urls:
-                    st.write(url)
-                st.session_state['history'].append((query, f"Reddit results for '{query}'"))
-            else:
-                st.warning("No results found.")
 
         else:
             response = handle_query(query)
@@ -129,6 +105,4 @@ def search_page():
     if st.button("Submit Query", key="submit_query", use_container_width=True):
         handle_search(user_query)
 
-
 search_page()
-

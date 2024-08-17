@@ -19,7 +19,6 @@ def search_page():
     def handle_query(query):
         chain = get_qa_chain()
         response = chain(query)
-        st.session_state['history'].append((query, response['result']))
         return response['result']
 
     # Function to handle YouTube search
@@ -64,7 +63,6 @@ def search_page():
                 st.error(f"An error occurred during YouTube search: {e}")
                 st.write("Here's the response for debugging purposes:")
                 st.write(results)  # Outputting the results for debugging
-
         else:
             response = handle_query(query)
             st.header("Answer")

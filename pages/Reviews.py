@@ -1,79 +1,81 @@
+import streamlit as st
 import asyncio
 import asyncpraw
-import pandas as pd
-import time
-from datetime import datetime
+from dotenv import load_dotenv
+import os
 
+# Async function to fetch Reddit data
 async def fetch_reddit_data(query):
-    async with asyncpraw.Reddit(client_id='vaGRzJF8B7WelHKQDzvf3w', client_secret='Ngwb0UqRiPbnLEZQdaCWEDGrwUbLzQ', user_agent='test by u/Huge_Donut9460') as reddit:
+    async with asyncpraw.Reddit(client_id='vaGRzJF8B7WelHKQDzvf3w',
+                                client_secret='Ngwb0UqRiPbnLEZQdaCWEDGrwUbLzQ',
+                                user_agent='test by u/Huge_Donut9460') as reddit:
 
         # Define the list of subreddits and limits
-        subreddits = ['india']  # Add more subreddits as needed
-        post_limit = 10
-        comment_limit = 5
+        subreddits = ['india', 'culture','spirituality','travel']  # Add more subreddits as needed
+        post_limit = 5
 
-        # Initialize lists to hold posts and comments
-        all_posts = []
-        all_comments = []
+        # Initialize a list to hold URLs of posts
+        all_urls = []
 
         for subreddit_name in subreddits:
             # Fetch posts
-            posts = []
             subreddit = await reddit.subreddit(subreddit_name)
 
             try:
                 async for submission in subreddit.search(query, limit=post_limit):
-                    posts.append([
-                        submission.id,  # Store post ID
-                        submission.url,  # Store post URL
-                        submission.title,  # Store post title
-                        submission.selftext,  # Store post selftext
-                        datetime.utcfromtimestamp(submission.created_utc).strftime('%Y-%m-%d %H:%M:%S'),
-                        subreddit_name
-                    ])
+                    all_urls.append(submission.url)
             except asyncpraw.exceptions.RedditAPIException as e:
                 if e.error_type == 'SUBREDDIT_NOT_FOUND':
-                    print(f"Subreddit '{subreddit_name}' not found.")
+                    st.warning(f"Subreddit '{subreddit_name}' not found.")
                 else:
                     raise e
 
-            # Create a DataFrame for posts with the required columns
-            posts_df = pd.DataFrame(posts, columns=['id', 'url', 'title', 'selftext', 'created_date', 'subreddit'])
+        # Return the list of URLs
+        return all_urls
 
-            # Function to fetch comments
-            async def fetch_comments(submission_id):
-                comments = []
-                submission = await reddit.submission(id=submission_id)
-                await submission.comments.replace_more(limit=comment_limit)
-                async for comment in submission.comments:
-                    comments.append([
-                        submission_id,  # Store post ID for reference
-                        comment.id,  # Store comment ID
-                        comment.body,  # Store comment body
-                        datetime.utcfromtimestamp(comment.created_utc).strftime('%Y-%m-%d %H:%M:%S')
-                    ])
-                return comments
+# Function to run the async function using asyncio.run()
+def run_fetch(query):
+    return asyncio.run(fetch_reddit_data(query))
 
-            # Fetch comments for each post
-            for post_id in posts_df['id']:
-                while True:
-                    try:
-                        all_comments.extend(await fetch_comments(post_id))
-                        break
-                    except asyncpraw.exceptions.RedditAPIException as e:
-                        if e.error_type == 'RATELIMIT':
-                            print(f"Rate limit exceeded. Waiting for {e.sleep_time} seconds")
-                            time.sleep(e.sleep_time)
-                        else:
-                            raise e
+# Streamlit interface
+def reddit_search_page():
+    load_dotenv()
+    
+    # Add custom header
+    st.markdown(
+        """
+        <h1 style='font-family: "Playfair New Zealand", serif; 
+                   font-weight: 400; 
+                   font-size: 50px; 
+                   color: #FF6B6B; 
+                   text-align: center;'>Tranquil Trails</h1>
+        """, 
+        unsafe_allow_html=True
+    )
 
-        # Create DataFrame for comments
-        comments_df = pd.DataFrame(all_comments, columns=['post_id', 'comment_id', 'body', 'created_date'])
+    # Description
+    st.markdown(
+        "<p style='font-size: 18px; font-family: Poppins, sans-serif; color: #4B4B4B; margin-bottom: 20px;'>"
+        "Enter a search query to fetch relevant Reddit posts from selected subreddits:</p>",
+        unsafe_allow_html=True
+    )
 
-        # Function to print only URLs from posts DataFrame
-        def get_urls(df):
-            return df['url'].tolist()
+    # Input field
+    query = st.text_input("", placeholder="Enter search query...", key="user_query", 
+                          help="Type the topic you'd like to search on Reddit")
 
-        # Return the URLs
-        return get_urls(posts_df)
+    # Search button
+    if st.button("Search Reddit", key="submit_query", use_container_width=True):
+        if query:
+            urls = run_fetch(query)
+            if urls:
+                st.markdown("<h3 style='font-family: Poppins, sans-serif; color: #FF6B6B;'>Top Post URLs:</h3>", unsafe_allow_html=True)
+                for url in urls:
+                    st.markdown(f"<p style='font-size: 16px; font-family: Poppins, sans-serif; color: #4B4B4B;'>{url}</p>", unsafe_allow_html=True)
+            else:
+                st.warning("No posts found for the query.")
+        else:
+            st.warning("Please enter a search query.")
 
+# Run the Streamlit app
+reddit_search_page()

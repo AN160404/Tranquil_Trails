@@ -81,6 +81,8 @@ def search_page():
         """, 
         unsafe_allow_html=True
     )
+    st.markdown("<p style='text-align:center; font-size: 25px;'><i>\"Uniting scenic travel and mindful cuisine to nurture body, mind, and spirit in calm locales.\"</i></p>", unsafe_allow_html=True)
+
     
     # Add the search input box with description text below
     st.markdown("<p class='ask-question-text' style='font-size: 18px; font-family: Poppins, sans-serif; color: #4B4B4B; margin-bottom: 20px;'>Enter your query:</p>", unsafe_allow_html=True)

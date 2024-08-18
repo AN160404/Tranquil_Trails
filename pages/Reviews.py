@@ -53,12 +53,15 @@ def reddit_search_page():
         unsafe_allow_html=True
     )
 
+    st.markdown("<p style='text-align:center; font-size: 25px;'><i>\"Uniting scenic travel and mindful cuisine to nurture body, mind, and spirit in calm locales.\"</i></p>", unsafe_allow_html=True)
+
     # Description
     st.markdown(
         "<p style='font-size: 18px; font-family: Poppins, sans-serif; color: #4B4B4B; margin-bottom: 20px;'>"
         "Enter a search query to fetch relevant Reddit posts from selected subreddits:</p>",
         unsafe_allow_html=True
     )
+    
 
     # Input field
     query = st.text_input("", placeholder="Enter search query...", key="user_query", 

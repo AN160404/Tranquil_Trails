@@ -6,7 +6,7 @@ from gtts import gTTS
 import os
 import google.generativeai as genai
 from dotenv import load_dotenv
-import pandas as pd
+
 
 def search_page():
     load_dotenv()
@@ -15,27 +15,6 @@ def search_page():
     if 'history' not in st.session_state:
         st.session_state['history'] = []
 
-    
-    def save_query_with_suggestions(query, suggestions):
-        file_path = "unknown_queries.xlsx"
-        engine = 'openpyxl'
-        if os.path.exists(file_path):
-            try:
-                df = pd.read_excel(file_path, engine=engine)
-            except Exception as e:
-                print(f"Error reading the Excel file: {e}")
-                df = pd.DataFrame(columns=["Query", "Suggestions"])
-        else:
-            df = pd.DataFrame(columns=["Query", "Suggestions"])
-            
-        new_data = pd.DataFrame({"Query": [query], "Suggestions": [suggestions]})
-        df = pd.concat([df, new_data], ignore_index=True)
-        
-        try:
-            df.to_excel(file_path, index=False, engine=engine)
-            print("Data saved successfully.")
-        except Exception as e:
-            print(f"Error saving the Excel file: {e}")
 
     def handle_query(query):
         chain = get_qa_chain()
@@ -88,12 +67,6 @@ def search_page():
             text_to_audio(response)
             st.session_state['history'].append((query, response))
 
-            if response.lower().strip() == "i don't know.":
-                suggestions = st.text_input("I don't know the answer. Please help expand our data.")
-            
-            if st.button("Submit Suggestions"):
-                save_query_with_suggestions(str(query), str(suggestions))
-                st.success("Your suggestions have been saved.")
 
     # Add custom header
     st.markdown(

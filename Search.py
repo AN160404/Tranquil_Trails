@@ -6,27 +6,46 @@ from gtts import gTTS
 import os
 import google.generativeai as genai
 from dotenv import load_dotenv
+import pandas as pd
 
 def search_page():
     load_dotenv()
     api_key = os.getenv("api_key")
     
-    # Initialize the 'history' key in st.session_state if it doesn't exist
     if 'history' not in st.session_state:
         st.session_state['history'] = []
 
-    # Function to handle the Q&A chain
+    
+    def save_query_with_suggestions(query, suggestions):
+        file_path = "unknown_queries.xlsx"
+        engine = 'openpyxl'
+        if os.path.exists(file_path):
+            try:
+                df = pd.read_excel(file_path, engine=engine)
+            except Exception as e:
+                print(f"Error reading the Excel file: {e}")
+                df = pd.DataFrame(columns=["Query", "Suggestions"])
+        else:
+            df = pd.DataFrame(columns=["Query", "Suggestions"])
+            
+        new_data = pd.DataFrame({"Query": [query], "Suggestions": [suggestions]})
+        df = pd.concat([df, new_data], ignore_index=True)
+        
+        try:
+            df.to_excel(file_path, index=False, engine=engine)
+            print("Data saved successfully.")
+        except Exception as e:
+            print(f"Error saving the Excel file: {e}")
+
     def handle_query(query):
         chain = get_qa_chain()
         response = chain(query)
         return response['result']
 
-    # Function to handle YouTube search
     def handle_youtube_search(api_key, query):
         results = search_youtube(api_key, query)
         return results
 
-    # Function to convert text to audio
     def text_to_audio(text):
         tts = gTTS(text=text, lang='en')
         temp_audio_file = "temp_audio.mp3"
@@ -38,7 +57,6 @@ def search_page():
         
         os.remove(temp_audio_file)
 
-    # Function to handle search queries
     def handle_search(query):
         create_vector_db()
         if "reddit" in query.lower() or "reviews" in query.lower():
@@ -69,6 +87,13 @@ def search_page():
             st.markdown(f"<p style='font-size: 18px; font-family: Poppins, sans-serif; color: #4B4B4B; margin-bottom: 20px;'>{response}</p>", unsafe_allow_html=True)
             text_to_audio(response)
             st.session_state['history'].append((query, response))
+
+            if response.lower().strip() == "i don't know.":
+                suggestions = st.text_input("I don't know the answer. Please help expand our data.")
+            
+            if st.button("Submit Suggestions"):
+                save_query_with_suggestions(str(query), str(suggestions))
+                st.success("Your suggestions have been saved.")
 
     # Add custom header
     st.markdown(

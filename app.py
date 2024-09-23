@@ -1,74 +1,67 @@
-import streamlit as st
+import os
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain_community.vectorstores import FAISS
 from langchain_google_genai import GoogleGenerativeAI
-from langchain.document_loaders.csv_loader import CSVLoader
-from langchain.chains import RetrievalQA
 from langchain.prompts import PromptTemplate
-from dotenv import load_dotenv
-import os
+from hello import api_key  # Assuming this is where the API key is stored
+from langchain.document_loaders.csv_loader import CSVLoader
+from langchain_core.runnables import RunnablePassthrough
 
-# Load environment variables from .env file
-load_dotenv('hello.env')
+# Set the API key in the environment
+os.environ["GOOGLE_API_KEY"] = api_key
 
-# Retrieve the API key from the environment
-api_key = os.getenv("GOOGLE_API_KEY")
+# Initialize the Google Generative AI model for question-answering
+llm = GoogleGenerativeAI(google_api_key=api_key, model='gemini-1.5-flash', temperature=0.9)
 
-# Ensure the API key is available
-if not api_key:
-    st.error("Google API key is missing. Please check your .env file.")
-else:
-    # Initialize GoogleGenerativeAI
-    llm = GoogleGenerativeAI(google_api_key=api_key, model='models/text-bison-001', temperature=0.9)
+# Initialize embeddings model for retrieval
+embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
 
-    # Initialize embeddings
-    instructor_embeddings = GoogleGenerativeAIEmbeddings(
-        model="models/embedding-001", task_type="retrieval_query"
-    ) 
 
-    vectordb_file_path = "faiss_index"
+# Create another embedding for query retrieval
+instructor_embeddings = GoogleGenerativeAIEmbeddings(
+    model="models/embedding-001", task_type="retrieval_query"
+)
 
-    def create_vector_db():
-        loader = CSVLoader(file_path="project.csv", source_column="States + UTs")
-        data = loader.load()
-        vectordb = FAISS.from_documents(documents=data, embedding=instructor_embeddings)
-        vectordb.save_local(vectordb_file_path)
-        st.success("Vector database created and saved.")
+# Path to save/load the FAISS vector database
+vectordb_file_path = "faiss_index"
 
-    def get_qa_chain():
-        vectordb = FAISS.load_local(vectordb_file_path, instructor_embeddings, allow_dangerous_deserialization=True)
-        retriever = vectordb.as_retriever(score_threshold=0.7)
-        prompt_template = """Given the following context and a question, generate an answer based on this context only.
-        In the answer try to provide as much text as possible from "response" section in the source document context without making much changes.
-        If the answer is not found in the context, kindly state "I don't know." Don't try to make up an answer.
+# Function to create the vector database from a CSV file
+def create_vector_db():
+    # Load the CSV file, assuming there's a column called 'States + UTs' containing the relevant data
+    loader = CSVLoader(file_path="project.csv", source_column="States + UTs")
+    data = loader.load()
 
-        CONTEXT: {context}
+    # Create the vector store using FAISS and store locally
+    vectordb = FAISS.from_documents(documents=data, embedding=instructor_embeddings)
+    vectordb.save_local(vectordb_file_path)
 
-        QUESTION: {question}
-        Please provide a detailed and comprehensive answer that includes multiple aspects and detailed explanations where possible.
-        """
-        PROMPT = PromptTemplate(
-            template=prompt_template, input_variables=["context", "question"]
-        )
-        chain_type_kwargs = {"prompt": PROMPT}
-        chain = RetrievalQA.from_chain_type(
-            llm=llm,
-            chain_type="stuff",
-            retriever=retriever,
-            input_key="query",
-            return_source_documents=True,
-            chain_type_kwargs=chain_type_kwargs
-        )
-        return chain
+# Function to set up the QA chain
+def get_qa_chain():
+    # Load the vector database
+    vectordb = FAISS.load_local(vectordb_file_path, instructor_embeddings, allow_dangerous_deserialization=True)
 
-    # Streamlit app components
-    st.title("Document Search and Q&A")
+    # Set up the retriever with a score threshold to filter relevant documents and return top 5 chunks
+    retriever = vectordb.as_retriever(score_threshold=0.7, top_k=5)
 
-    if st.button("Create Vector Database"):
-        create_vector_db()
+    # Define the prompt template
+    prompt_template = """
+   You are an expert assistant in tourism and travel planning. Based on the following context retrieved from a document, generate a complete and detailed answer to the user's question.
 
-    question = st.text_input("Enter your question:")
-    if st.button("Get Answer") and question:
-        chain = get_qa_chain()
-        answer = chain(question)
-        st.write(answer)
+   Make sure the response is well-structured, includes practical recommendations, and explains the content clearly. Avoid using phrases such as "the document says" and aim to provide a natural response.
+
+   CONTEXT: {context}
+
+  QUESTION: {question}
+
+   Answer as thoroughly as possible, combining information from the context and offering additional suggestions if relevant. If the answer is not found in the context, say "I don't know" and avoid creating false information.
+    """
+    prompt = PromptTemplate(template=prompt_template, input_variables=["context", "question"])
+
+    # Create a RAG chain using the retriever, prompt, and LLM
+    chain = (
+        {"context": retriever, "question": RunnablePassthrough()}
+        | prompt
+        | llm
+    )
+
+    return chain
